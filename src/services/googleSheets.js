@@ -1,48 +1,41 @@
-import { google } from 'googleapis';
-
-const sheets = google.sheets('v4');
+import { GoogleAuth } from 'google-auth-library';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 export async function getAuthToken() {
-  const auth = new google.auth.GoogleAuth({
+  const auth = new GoogleAuth({
     scopes: SCOPES
   });
-  const authToken = await auth.getClient();
-  return authToken;
+  return auth.getClient();
 }
 
-export async function getSpreadSheetValues({ spreadsheetId, auth, sheetName }) {
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    auth,
-    range: sheetName
-  });
-  return res;
+async function fetchFromGoogleSheets(url, options = {}) {
+  const authClient = await getAuthToken();
+  const response = await authClient.request({ url, ...options });
+  return response.data;
 }
 
-export async function appendSpreadSheetValues({ spreadsheetId, auth, sheetName, values }) {
-  const res = await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    auth,
-    range: sheetName,
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: values
-    },
-  });
-  return res;
+export async function getSpreadSheetValues({ spreadsheetId, sheetName }) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}`;
+  return fetchFromGoogleSheets(url);
 }
 
-export async function updateSpreadSheetValues({ spreadsheetId, auth, range, values }) {
-  const res = await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    auth,
-    range,
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: values
-    },
-  });
-  return res;
+export async function appendSpreadSheetValues({ spreadsheetId, sheetName, values }) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}:append`;
+  const options = {
+    method: 'POST',
+    params: { valueInputOption: 'USER_ENTERED' },
+    data: { values }
+  };
+  return fetchFromGoogleSheets(url, options);
+}
+
+export async function updateSpreadSheetValues({ spreadsheetId, range, values }) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`;
+  const options = {
+    method: 'PUT',
+    params: { valueInputOption: 'USER_ENTERED' },
+    data: { values }
+  };
+  return fetchFromGoogleSheets(url, options);
 }
