@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getSpreadSheetValues, getAuthToken } from '../services/googleSheets';
+import { getSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
 
 function TrendingRecipes() {
@@ -12,14 +12,8 @@ function TrendingRecipes() {
 
   const fetchTrendingRecipes = async () => {
     try {
-      const auth = await getAuthToken();
-      const response = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes'
-      });
-
-      const recipesData = response.data.values.slice(1);
+      const response = await getSpreadSheetValues('Recipes');
+      const recipesData = response.slice(1);
       const sortedRecipes = recipesData
         .map(row => ({
           id: row[0],
@@ -31,7 +25,6 @@ function TrendingRecipes() {
         }))
         .sort((a, b) => b.views - a.views || b.rating - a.rating)
         .slice(0, 10); // Get top 10 trending recipes
-
       setTrendingRecipes(sortedRecipes);
     } catch (error) {
       console.error('Error fetching trending recipes:', error);
