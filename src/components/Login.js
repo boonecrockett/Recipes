@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { signIn, signUp } from '../services/auth';
-import { useHistory } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Keep only useNavigate
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const history = useNavigate();
+  const navigate = useNavigate(); // Use navigate instead of history
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +16,7 @@ function Login() {
       } else {
         await signIn(email, password);
       }
-      history.push('/');
+      navigate('/'); // Use navigate to redirect
     } catch (error) {
       console.error('Error during authentication:', error);
       alert(error.message);
