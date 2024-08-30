@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signIn, signUp } from '../services/auth';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom/Switch';
 
 function Login() {
   const [email, setEmail] = useState('');
