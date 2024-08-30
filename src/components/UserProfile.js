@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom/Switch';
+import { Link } from 'react-router-dom';
 import { getCurrentUser } from '../services/auth';
 import { getSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
