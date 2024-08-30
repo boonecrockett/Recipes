@@ -7,6 +7,7 @@ import AddRecipe from './AddRecipe';
 import Login from './Login';
 import UserProfile from './UserProfile';
 import TrendingRecipes from './TrendingRecipes';
+import NotFound from './NotFound'; // You'll need to create this component
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" component={Login} />
           <Route path="/profile" component={UserProfile} />
           <Route path="/trending" component={TrendingRecipes} />
+          <Route component={NotFound} /> {/* This will catch all unmatched routes */}
         </Switch>
       </div>
     </Router>
