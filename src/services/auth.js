@@ -1,31 +1,37 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut as firebaseSignOut, 
+  onAuthStateChanged 
+} from 'firebase/auth';
 
 const firebaseConfig = {
   // Your Firebase configuration here
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
 
-export const auth = firebase.auth();
+// Initialize Firebase Auth
+const auth = getAuth(firebaseApp);
 
 export const signIn = (email, password) => {
-  return auth.signInWithEmailAndPassword(email, password);
+  return signInWithEmailAndPassword(auth, email, password);
 };
 
 export const signUp = (email, password) => {
-  return auth.createUserWithEmailAndPassword(email, password);
+  return createUserWithEmailAndPassword(auth, email, password);
 };
 
 export const signOut = () => {
-  return auth.signOut();
+  return firebaseSignOut(auth);
 };
 
 export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       unsubscribe();
       resolve(user);
     }, reject);
