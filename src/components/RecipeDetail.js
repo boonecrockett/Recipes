@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getSpreadSheetValues, getAuthToken, appendSpreadSheetValues, updateSpreadSheetValues } from '../services/googleSheets';
+import { getSpreadSheetValues, appendSpreadSheetValues, updateSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
 import { getCurrentUser } from '../services/auth';
 
@@ -35,14 +35,8 @@ function RecipeDetail() {
 
   const fetchRecipe = async () => {
     try {
-      const auth = await getAuthToken();
-      const response = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes'
-      });
-
-      const recipesData = response.data.values.slice(1);
+      const response = await getSpreadSheetValues('Recipes');
+      const recipesData = response.slice(1);
       const recipeData = recipesData.find(row => row[0] === id);
 
       if (recipeData) {
@@ -71,15 +65,7 @@ function RecipeDetail() {
     if (!isAdmin) return;
 
     try {
-      const auth = await getAuthToken();
-      await updateSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes',
-        range: `K${recipe.id}`,
-        values: [[!recipe.published]]
-      });
-
+      await updateSpreadSheetValues(`Recipes!K${recipe.id}`, [[!recipe.published]]);
       setRecipe({ ...recipe, published: !recipe.published });
     } catch (error) {
       console.error('Error toggling publication status:', error);
@@ -89,13 +75,7 @@ function RecipeDetail() {
   const handleRating = async (rating) => {
     setUserRating(rating);
     try {
-      const auth = await getAuthToken();
-      await appendSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Ratings',
-        values: [[id, rating]]
-      });
+      await appendSpreadSheetValues('Ratings', [[id, rating]]);
       // You might want to update the average rating here or refetch the recipe
     } catch (error) {
       console.error('Error submitting rating:', error);
@@ -104,25 +84,15 @@ function RecipeDetail() {
 
   const toggleFavorite = async () => {
     try {
-      const auth = await getAuthToken();
       if (isFavorite) {
         // Remove from favorites
-        const response = await getSpreadSheetValues({
-          spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-          auth,
-          sheetName: 'Favorites'
-        });
-        const favoritesData = response.data.values.slice(1);
+        const response = await getSpreadSheetValues('Favorites');
+        const favoritesData = response.slice(1);
         const updatedFavorites = favoritesData.filter(row => !(row[0] === user.uid && row[1] === id));
         // Here you would update the entire 'Favorites' sheet with the updatedFavorites data
       } else {
         // Add to favorites
-        await appendSpreadSheetValues({
-          spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-          auth,
-          sheetName: 'Favorites',
-          values: [[user.uid, id]]
-        });
+        await appendSpreadSheetValues('Favorites', [[user.uid, id]]);
       }
       setIsFavorite(!isFavorite);
     } catch (error) {
@@ -132,14 +102,8 @@ function RecipeDetail() {
 
   const checkIfFavorite = async () => {
     try {
-      const auth = await getAuthToken();
-      const response = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Favorites'
-      });
-
-      const favoritesData = response.data.values.slice(1);
+      const response = await getSpreadSheetValues('Favorites');
+      const favoritesData = response.slice(1);
       const isFav = favoritesData.some(row => row[0] === user.uid && row[1] === id);
       setIsFavorite(isFav);
     } catch (error) {
@@ -164,13 +128,13 @@ function RecipeDetail() {
       <p><strong>Prep Time:</strong> {recipe.prepTime}</p>
       <p><strong>Cook Time:</strong> {recipe.cookTime}</p>
       <p><strong>Rating:</strong> {formatRating(recipe.rating)}</p>
-      
+
       <h3>Ingredients:</h3>
       <p>{recipe.ingredients}</p>
-      
+
       <h3>Preparation Steps:</h3>
       <p>{recipe.steps}</p>
-      
+
       <p><em>Submitted by: {recipe.submittedBy}</em></p>
 
       <div>
