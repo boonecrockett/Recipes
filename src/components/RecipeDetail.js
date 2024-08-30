@@ -126,4 +126,69 @@ function RecipeDetail() {
       }
       setIsFavorite(!isFavorite);
     } catch (error) {
-      console.error('Error toggling
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const checkIfFavorite = async () => {
+    try {
+      const auth = await getAuthToken();
+      const response = await getSpreadSheetValues({
+        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
+        auth,
+        sheetName: 'Favorites'
+      });
+
+      const favoritesData = response.data.values.slice(1);
+      const isFav = favoritesData.some(row => row[0] === user.uid && row[1] === id);
+      setIsFavorite(isFav);
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  if (!recipe) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="recipe-detail">
+      <h2>{recipe.name}</h2>
+      {isAdmin && (
+        <button onClick={togglePublicationStatus}>
+          {recipe.published ? 'Unpublish' : 'Publish'}
+        </button>
+      )}
+      <p><strong>Game Type:</strong> {recipe.gameType}</p>
+      <p><strong>Cooking Method:</strong> {recipe.cookingMethod}</p>
+      <p><strong>Prep Time:</strong> {recipe.prepTime}</p>
+      <p><strong>Cook Time:</strong> {recipe.cookTime}</p>
+      <p><strong>Rating:</strong> {formatRating(recipe.rating)}</p>
+      
+      <h3>Ingredients:</h3>
+      <p>{recipe.ingredients}</p>
+      
+      <h3>Preparation Steps:</h3>
+      <p>{recipe.steps}</p>
+      
+      <p><em>Submitted by: {recipe.submittedBy}</em></p>
+
+      <div>
+        <h3>Rate this recipe:</h3>
+        {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map(rating => (
+          <button key={rating} onClick={() => handleRating(rating)}>
+            {rating}
+          </button>
+        ))}
+      </div>
+
+      {user && (
+        <button onClick={toggleFavorite}>
+          {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default RecipeDetail;
