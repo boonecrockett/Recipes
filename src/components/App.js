@@ -14,7 +14,7 @@ function App() {
     <Router>
       <div className="App">
         <Navbar />
-        <Switch>
+        <Routes>
           <Route exact path="/" component={RecipeList} />
           <Route path="/recipe/:id" component={RecipeDetail} />
           <Route path="/add-recipe" component={AddRecipe} />
@@ -22,7 +22,7 @@ function App() {
           <Route path="/profile" component={UserProfile} />
           <Route path="/trending" component={TrendingRecipes} />
           <Route component={NotFound} /> {/* This will catch all unmatched routes */}
-        </Switch>
+        </Routes>
       </div>
     </Router>
   );
