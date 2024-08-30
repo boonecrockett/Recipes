@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { getSpreadSheetValues, appendSpreadSheetValues, updateSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
@@ -10,30 +10,10 @@ function RecipeDetail() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
-  useEffect(() => {
-    fetchRecipe();
-    fetchCurrentUser();
-  }, [id]);
-
-  useEffect(() => {
-    if (user) {
-      checkIfFavorite();
-      checkAdminStatus();
-    }
-  }, [user, id]);
-
-  const fetchCurrentUser = async () => {
-    const currentUser = await getCurrentUser();
-    setUser(currentUser);
-  };
-
-  const checkAdminStatus = () => {
-    setIsAdmin(user && user.email === 'admin@example.com');
-  };
-
-  const fetchRecipe = async () => {
+  const fetchRecipe = useCallback(async () => {
     try {
       const response = await getSpreadSheetValues('Recipes');
       const recipesData = response.slice(1);
@@ -54,12 +34,33 @@ function RecipeDetail() {
           published: recipeData[10] === 'TRUE'
         });
       } else {
-        console.error('Recipe not found');
+        setError('Recipe not found');
       }
     } catch (error) {
-      console.error('Error fetching recipe:', error);
+      setError('Error fetching recipe: ' + error.message);
     }
-  };
+  }, [id]);
+
+  const fetchCurrentUser = useCallback(async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      setError('Error fetching user: ' + error.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecipe();
+    fetchCurrentUser();
+  }, [fetchRecipe, fetchCurrentUser]);
+
+  useEffect(() => {
+    if (user) {
+      checkIfFavorite();
+      setIsAdmin(user.email === 'admin@example.com');
+    }
+  }, [user, id]);
 
   const togglePublicationStatus = async () => {
     if (!isAdmin) return;
@@ -68,48 +69,65 @@ function RecipeDetail() {
       await updateSpreadSheetValues(`Recipes!K${recipe.id}`, [[!recipe.published]]);
       setRecipe({ ...recipe, published: !recipe.published });
     } catch (error) {
-      console.error('Error toggling publication status:', error);
+      setError('Error toggling publication status: ' + error.message);
     }
   };
 
   const handleRating = async (rating) => {
     setUserRating(rating);
     try {
-      await appendSpreadSheetValues('Ratings', [[id, rating]]);
-      // You might want to update the average rating here or refetch the recipe
+      const response = await getSpreadSheetValues('Ratings');
+      const ratingsData = response.slice(1);
+      const existingRatingIndex = ratingsData.findIndex(row => row[0] === id && row[1] === user.uid);
+      
+      if (existingRatingIndex !== -1) {
+        // Update existing rating
+        await updateSpreadSheetValues(`Ratings!C${existingRatingIndex + 2}`, [[rating]]);
+      } else {
+        // Add new rating
+        await appendSpreadSheetValues('Ratings', [[id, user.uid, rating]]);
+      }
+      
+      // Refetch recipe to update average rating
+      await fetchRecipe();
     } catch (error) {
-      console.error('Error submitting rating:', error);
+      setError('Error submitting rating: ' + error.message);
     }
   };
 
   const toggleFavorite = async () => {
     try {
+      const response = await getSpreadSheetValues('Favorites');
+      const favoritesData = response.slice(1);
+      
       if (isFavorite) {
         // Remove from favorites
-        const response = await getSpreadSheetValues('Favorites');
-        const favoritesData = response.slice(1);
         const updatedFavorites = favoritesData.filter(row => !(row[0] === user.uid && row[1] === id));
-        // Here you would update the entire 'Favorites' sheet with the updatedFavorites data
+        await updateSpreadSheetValues('Favorites!A2:B', updatedFavorites);
       } else {
         // Add to favorites
         await appendSpreadSheetValues('Favorites', [[user.uid, id]]);
       }
       setIsFavorite(!isFavorite);
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      setError('Error toggling favorite: ' + error.message);
     }
   };
 
-  const checkIfFavorite = async () => {
+  const checkIfFavorite = useCallback(async () => {
     try {
       const response = await getSpreadSheetValues('Favorites');
       const favoritesData = response.slice(1);
       const isFav = favoritesData.some(row => row[0] === user.uid && row[1] === id);
       setIsFavorite(isFav);
     } catch (error) {
-      console.error('Error checking favorite status:', error);
+      setError('Error checking favorite status: ' + error.message);
     }
-  };
+  }, [user, id]);
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   if (!recipe) {
     return <div>Loading...</div>;
@@ -140,7 +158,11 @@ function RecipeDetail() {
       <div>
         <h3>Rate this recipe:</h3>
         {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map(rating => (
-          <button key={rating} onClick={() => handleRating(rating)}>
+          <button 
+            key={rating} 
+            onClick={() => handleRating(rating)}
+            aria-label={`Rate ${rating} stars`}
+          >
             {rating}
           </button>
         ))}
