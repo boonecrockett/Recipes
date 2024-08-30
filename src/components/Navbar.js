@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom/Switch';
 import { getCurrentUser, signOut } from '../services/auth';
 
 function Navbar() {
