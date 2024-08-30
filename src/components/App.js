@@ -1,0 +1,29 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Navbar from './Navbar';
+import RecipeList from './RecipeList';
+import RecipeDetail from './RecipeDetail';
+import AddRecipe from './AddRecipe';
+import Login from './Login';
+import UserProfile from './UserProfile';
+import TrendingRecipes from './TrendingRecipes';
+
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <Navbar />
+        <Switch>
+          <Route exact path="/" component={RecipeList} />
+          <Route path="/recipe/:id" component={RecipeDetail} />
+          <Route path="/add-recipe" component={AddRecipe} />
+          <Route path="/login" component={Login} />
+          <Route path="/profile" component={UserProfile} />
+          <Route path="/trending" component={TrendingRecipes} />
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
