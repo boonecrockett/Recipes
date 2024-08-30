@@ -83,7 +83,7 @@ function RecipeList() {
           value={selectedGameType}
           onChange={(e) => setSelectedGameType(e.target.value)}
         >
-          <option value="">All Game Types</option>
+          <option value=''>All Game Types</option>
           {gameTypes.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
@@ -93,7 +93,7 @@ function RecipeList() {
           value={selectedCookingMethod}
           onChange={(e) => setSelectedCookingMethod(e.target.value)}
         >
-          <option value="">All Cooking Methods</option>
+          <option value=''>All Cooking Methods</option>
           {cookingMethods.map(method => (
             <option key={method} value={method}>{method}</option>
           ))}
@@ -115,10 +115,10 @@ function RecipeList() {
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="name">Sort by Name</option>
-          <option value="rating">Sort by Rating</option>
-          <option value="prepTime">Sort by Prep Time</option>
-          <option value="cookTime">Sort by Cook Time</option>
+          <option value='name'>Sort by Name</option>
+          <option value='rating'>Sort by Rating</option>
+          <option value='prepTime'>Sort by Prep Time</option>
+          <option value='cookTime'>Sort by Cook Time</option>
         </select>
 
         <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
@@ -141,7 +141,7 @@ function RecipeList() {
         {filteredRecipes.map(recipe => (
           <li key={recipe.id}>
             <Link to={`/recipe/${recipe.id}`}>
-              <h3>{recipe.name} {!recipe.published && isAdmin && " (Unpublished)"}</h3>
+              <h3>{recipe.name} {!recipe.published && isAdmin && ' (Unpublished)'}</h3>
               <p>Game Type: {recipe.gameType}</p>
               <p>Cooking Method: {recipe.cookingMethod}</p>
               <p>Prep Time: {recipe.prepTime}</p>
