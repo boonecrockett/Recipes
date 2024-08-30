@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { appendSpreadSheetValues, getAuthToken } from '../services/googleSheets';
+import { appendSpreadSheetValues } from '../services/googleSheets';
 import { getCurrentUser } from '../services/auth';
 import { gameTypes, cookingMethods } from '../utils/recipeUtils';
 
@@ -48,13 +48,7 @@ function AddRecipe() {
     ];
 
     try {
-      const auth = await getAuthToken();
-      await appendSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes',
-        values: [recipeData]
-      });
+      await appendSpreadSheetValues('Recipes', [recipeData]);
       alert('Recipe submitted successfully!');
       setRecipe({
         name: '',
@@ -75,7 +69,7 @@ function AddRecipe() {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Add New Recipe</h2>
-      
+
       <div>
         <label htmlFor="name">Recipe Name:</label>
         <input
