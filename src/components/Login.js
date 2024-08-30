@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { signIn, signUp } from '../services/auth';
 import { useNavigate } from 'react-router-dom'; // Keep only useNavigate
 
