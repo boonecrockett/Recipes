@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getCurrentUser } from '../services/auth';
-import { getSpreadSheetValues, getAuthToken } from '../services/googleSheets';
+import { getSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
 
 function UserProfile() {
@@ -24,14 +24,8 @@ function UserProfile() {
 
   const fetchUserRecipes = async (userEmail) => {
     try {
-      const auth = await getAuthToken();
-      const response = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes'
-      });
-
-      const recipesData = response.data.values.slice(1);
+      const response = await getSpreadSheetValues('Recipes');
+      const recipesData = response.slice(1);
       const userRecipes = recipesData
         .filter(row => row[9] === userEmail)
         .map(row => ({
@@ -41,7 +35,6 @@ function UserProfile() {
           cookingMethod: row[3],
           rating: parseFloat(row[8])
         }));
-
       setUserRecipes(userRecipes);
     } catch (error) {
       console.error('Error fetching user recipes:', error);
@@ -50,25 +43,14 @@ function UserProfile() {
 
   const fetchFavoriteRecipes = async (userId) => {
     try {
-      const auth = await getAuthToken();
-      const response = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Favorites'
-      });
-
-      const favoritesData = response.data.values.slice(1);
+      const favoritesResponse = await getSpreadSheetValues('Favorites');
+      const favoritesData = favoritesResponse.slice(1);
       const userFavorites = favoritesData
         .filter(row => row[0] === userId)
         .map(row => row[1]);
 
-      const recipesResponse = await getSpreadSheetValues({
-        spreadsheetId: process.env.REACT_APP_GOOGLE_SHEET_ID,
-        auth,
-        sheetName: 'Recipes'
-      });
-
-      const recipesData = recipesResponse.data.values.slice(1);
+      const recipesResponse = await getSpreadSheetValues('Recipes');
+      const recipesData = recipesResponse.slice(1);
       const favoriteRecipes = recipesData
         .filter(row => userFavorites.includes(row[0]))
         .map(row => ({
@@ -78,7 +60,6 @@ function UserProfile() {
           cookingMethod: row[3],
           rating: parseFloat(row[8])
         }));
-
       setFavoriteRecipes(favoriteRecipes);
     } catch (error) {
       console.error('Error fetching favorite recipes:', error);
