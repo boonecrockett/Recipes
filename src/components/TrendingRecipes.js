@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getSpreadSheetValues } from '../services/googleSheets';
 import { formatRating } from '../utils/recipeUtils';
