@@ -2,6 +2,7 @@
   "name": "wild-game-recipe-functions",
   "version": "1.0.0",
   "dependencies": {
-    "google-spreadsheet": "^3.3.0"
+    "google-spreadsheet": "^3.3.0",
+    "google-auth-library": "^8.0.0"
   }
 }
