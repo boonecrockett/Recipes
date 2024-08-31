@@ -1,5 +1,11 @@
 [build]
-  command = "npm run build && cd netlify/functions && npm install"
+  command = """
+    echo "Starting build process" && \
+    npm run build || (echo "React build failed" && exit 1) && \
+    echo "React build successful, installing function dependencies" && \
+    cd netlify/functions && npm install || (echo "Function dependency installation failed" && exit 1) && \
+    echo "Build process completed successfully"
+  """
   publish = "build"
   functions = "netlify/functions"
 
