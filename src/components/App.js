@@ -1,27 +1,21 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './Navbar';
-import RecipeList from './RecipeList';
-import RecipeDetail from './RecipeDetail';
-import AddRecipe from './AddRecipe';
-import Login from './Login';
-import UserProfile from './UserProfile';
-import TrendingRecipes from './TrendingRecipes';
-import NotFound from './NotFound'; // You'll need to create this component
+// App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import RecipeForm from './components/RecipeForm';
+import AuthComponent from './components/AuthComponent';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <Navbar />
-        <Routes>
-          <Route exact path="/" component={RecipeList} />
-          <Route path="/recipe/:id" component={RecipeDetail} />
-          <Route path="/add-recipe" component={AddRecipe} />
-          <Route path="/login" component={Login} />
-          <Route path="/profile" component={UserProfile} />
-          <Route path="/trending" component={TrendingRecipes} />
-          <Route component={NotFound} /> {/* This will catch all unmatched routes */}
-        </Routes>
+        <header className="App-header">
+          <h1>North American Wild Game Recipes</h1>
+        </header>
+        <Switch>
+          <Route exact path="/" component={AuthComponent} />
+          <ProtectedRoute path="/submit-recipe" component={RecipeForm} />
+        </Switch>
       </div>
     </Router>
   );
