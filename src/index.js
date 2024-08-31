@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 
-console.log('React is loading...'); // Kept for debugging
+console.warn('React is loading...'); // Changed to warn
 
 const root = createRoot(document.getElementById('root'));
 root.render(
@@ -12,4 +12,4 @@ root.render(
   </React.StrictMode>
 );
 
-console.log('React has rendered'); // Kept for debugging
+console.warn('React has rendered'); // Changed to warn
