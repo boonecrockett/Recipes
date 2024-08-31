@@ -1,8 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RecipeForm from './components/RecipeForm';
 import AuthComponent from './components/AuthComponent';
-import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -11,11 +10,10 @@ function App() {
         <header className="App-header">
           <h1>North American Wild Game Recipes</h1>
         </header>
-    <p>If you can see this, React is working!</p>
-        <Switch>
-          <Route exact path="/" component={AuthComponent} />
-          <ProtectedRoute path="/submit-recipe" component={RecipeForm} />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<AuthComponent />} />
+          <Route path="/submit-recipe" element={<RecipeForm />} />
+        </Routes>
       </div>
     </Router>
   );
