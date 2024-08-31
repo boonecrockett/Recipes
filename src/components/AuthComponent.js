@@ -1,4 +1,3 @@
-// src/components/AuthComponent.js
 import React, { useState, useEffect } from 'react';
 import { auth, signInWithGoogle } from '../utils/firebase';
 import { useHistory } from 'react-router-dom';
@@ -24,7 +23,7 @@ const AuthComponent = () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error('Error signing in with Google', error);
+      // Handle error (e.g., show an error message to the user)
     }
   };
 
@@ -33,7 +32,7 @@ const AuthComponent = () => {
       await auth.signOut();
       history.push('/');
     } catch (error) {
-      console.error('Error signing out', error);
+      // Handle error (e.g., show an error message to the user)
     }
   };
 
