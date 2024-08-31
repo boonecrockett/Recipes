@@ -1,38 +1,38 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth, signInWithGoogle } from '../utils/firebase';
-import { useHistory } from 'react-router-dom';
 
 const AuthComponent = () => {
   const [user, setUser] = useState(null);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
-        history.push('/submit-recipe');
+        navigate('/submit-recipe');
       } else {
         setUser(null);
       }
     });
 
     return () => unsubscribe();
-  }, [history]);
+  }, [navigate]);
 
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      // Handle error (e.g., show an error message to the user)
+      console.error('Error signing in with Google', error);
     }
   };
 
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      history.push('/');
+      navigate('/');
     } catch (error) {
-      // Handle error (e.g., show an error message to the user)
+      console.error('Error signing out', error);
     }
   };
 
