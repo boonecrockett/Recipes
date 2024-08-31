@@ -4,16 +4,22 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 
-console.warn('React is initializing...'); // Moved earlier in the process
+console.warn('React is initializing...'); 
 
-const root = createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Failed to find the root element');
 
-console.warn('Root created, about to render...'); // Added for more detailed debugging
+const root = createRoot(rootElement);
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+console.warn('Root created, about to render...'); 
 
-console.warn('React has rendered'); // Kept as is
+try {
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+  console.warn('React has rendered');
+} catch (error) {
+  console.error('Error during rendering:', error);
+}
