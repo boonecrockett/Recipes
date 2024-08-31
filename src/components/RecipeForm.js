@@ -13,6 +13,7 @@ const RecipeForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const gameTypes = ['Deer', 'Elk', 'Moose', 'Duck', 'Pheasant'];
   const cookingMethods = ['Grilling', 'Roasting', 'Smoking', 'Braising'];
@@ -37,15 +38,17 @@ const RecipeForm = () => {
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
+      setSuccessMessage('');
       return;
     }
 
     setIsSubmitting(true);
     setError('');
+    setSuccessMessage('');
 
     try {
       await submitRecipe(recipe);
-      alert('Recipe submitted successfully!');
+      setSuccessMessage('Recipe submitted successfully!');
       setRecipe({
         name: '',
         ingredients: '',
@@ -55,7 +58,6 @@ const RecipeForm = () => {
         cookingTime: ''
       });
     } catch (error) {
-      console.error('Error submitting recipe:', error);
       setError('Failed to submit recipe. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -67,6 +69,7 @@ const RecipeForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">Submit a Wild Game Recipe</h2>
 
       {error && <div className="mb-4 text-red-500">{error}</div>}
+      {successMessage && <div className="mb-4 text-green-500">{successMessage}</div>}
 
       <div className="mb-4">
         <label htmlFor="name" className="block mb-2 font-bold">Recipe Name</label>
