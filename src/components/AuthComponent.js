@@ -48,7 +48,7 @@ const AuthComponent = () => {
     return (
       <div className="auth-container">
         <h2>Welcome, {user.displayName}!</h2>
-        <p>You're signed in with: {user.email}</p>
+        <p>You&apos;re signed in with: {user.email}</p>
         {user.photoURL && <img src={user.photoURL} alt="Profile" className="profile-image" />}
         <button type="button" onClick={handleSignOut} className="sign-out-button">Sign Out</button>
         {error && <p className="error-message">{error}</p>}
