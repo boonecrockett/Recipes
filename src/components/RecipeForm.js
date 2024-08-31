@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { submitRecipe } from '../utils/googleSheets';
 
 const RecipeForm = () => {
   const [recipe, setRecipe] = useState({
@@ -38,7 +37,6 @@ const RecipeForm = () => {
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
-      setSuccessMessage('');
       return;
     }
 
@@ -47,8 +45,17 @@ const RecipeForm = () => {
     setSuccessMessage('');
 
     try {
-      await submitRecipe(recipe);
-      setSuccessMessage('Recipe submitted successfully!');
+      const response = await fetch('/.netlify/functions/submitRecipe', {
+        method: 'POST',
+        body: JSON.stringify(recipe),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit recipe');
+      }
+
+      const result = await response.json();
+      setSuccessMessage(result.message);
       setRecipe({
         name: '',
         ingredients: '',
