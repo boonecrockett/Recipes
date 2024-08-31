@@ -1,9 +1,23 @@
+const webpack = require('webpack');
+
 module.exports = function override(config, env) {
-  config.externals = {
-    ...config.externals,
-    'child_process': 'require("child_process")',
-    'fs': 'require("fs")',
-    'google-auth-library': 'require("google-auth-library")',
+  // Add fallback for node modules
+  config.resolve.fallback = {
+    ...config.resolve.fallback,
+    "crypto": require.resolve("crypto-browserify"),
+    "stream": require.resolve("stream-browserify"),
+    "util": require.resolve("util/"),
+    "buffer": require.resolve("buffer/"),
+    "process": require.resolve("process/browser"),
   };
+
+  // Add plugin to provide global variables
+  config.plugins.push(
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    })
+  );
+
   return config;
 };
