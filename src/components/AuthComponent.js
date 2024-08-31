@@ -50,7 +50,7 @@ const AuthComponent = () => {
         <h2>Welcome, {user.displayName}!</h2>
         <p>You're signed in with: {user.email}</p>
         {user.photoURL && <img src={user.photoURL} alt="Profile" className="profile-image" />}
-        <button onClick={handleSignOut} className="sign-out-button">Sign Out</button>
+        <button type="button" onClick={handleSignOut} className="sign-out-button">Sign Out</button>
         {error && <p className="error-message">{error}</p>}
       </div>
     );
@@ -59,7 +59,7 @@ const AuthComponent = () => {
   return (
     <div className="auth-container">
       <h2>Sign In to Submit Recipes</h2>
-      <button onClick={handleSignIn} className="sign-in-button">Sign In with Google</button>
+      <button type="button" onClick={handleSignIn} className="sign-in-button">Sign In with Google</button>
       {error && <p className="error-message">{error}</p>}
     </div>
   );
