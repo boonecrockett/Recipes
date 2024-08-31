@@ -1,14 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';  // This line should be present
+import { createRoot } from 'react-dom/client';
+import './index.css';
 import App from './App';
-//import reportWebVitals from './reportWebVitals';
-console.log('React is loading...'); // Add this line
 
-ReactDOM.render(
+console.log('React is loading...'); // Kept for debugging
+
+const root = createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
-console.log('React has rendered'); // Add this line
+
+console.log('React has rendered'); // Kept for debugging
