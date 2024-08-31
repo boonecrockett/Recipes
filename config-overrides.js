@@ -19,5 +19,28 @@ module.exports = function override(config, env) {
     })
   );
 
+  // Ensure Babel plugins are correctly configured
+  if (!config.module) config.module = {};
+  if (!config.module.rules) config.module.rules = [];
+  
+  config.module.rules.push({
+    test: /\.(js|mjs|jsx|ts|tsx)$/,
+    exclude: /@babel(?:\/|\\{1,2})runtime/,
+    loader: require.resolve('babel-loader'),
+    options: {
+      plugins: [
+        [
+          require.resolve('@babel/plugin-proposal-private-property-in-object'),
+          { loose: true }
+        ]
+      ],
+      babelrc: false,
+      configFile: false,
+      compact: false,
+      cacheDirectory: true,
+      cacheCompression: false,
+    },
+  });
+
   return config;
 };
