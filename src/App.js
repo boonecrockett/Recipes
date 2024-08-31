@@ -11,6 +11,7 @@ function App() {
         <header className="App-header">
           <h1>North American Wild Game Recipes</h1>
         </header>
+    <p>If you can see this, React is working!</p>
         <Switch>
           <Route exact path="/" component={AuthComponent} />
           <ProtectedRoute path="/submit-recipe" component={RecipeForm} />
