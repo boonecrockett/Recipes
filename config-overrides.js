@@ -19,7 +19,7 @@ module.exports = function override(config, env) {
     })
   );
 
-  // Ensure Babel plugins are correctly configured
+  // Ensure Babel plugins and presets are correctly configured
   if (!config.module) config.module = {};
   if (!config.module.rules) config.module.rules = [];
   
@@ -28,6 +28,9 @@ module.exports = function override(config, env) {
     exclude: /@babel(?:\/|\\{1,2})runtime/,
     loader: require.resolve('babel-loader'),
     options: {
+      presets: [
+        [require.resolve('@babel/preset-react'), { runtime: 'automatic' }]
+      ],
       plugins: [
         [
           require.resolve('@babel/plugin-proposal-private-property-in-object'),
