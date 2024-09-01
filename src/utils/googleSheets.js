@@ -1,3 +1,13 @@
+// Simple test function to verify variable loading
+export const testEnvVars = () => {
+  console.log('Running environment variable check');
+  console.log('SPREADSHEET_ID:', process.env.REACT_APP_GOOGLE_SHEETS_ID || 'SPREADSHEET_ID is undefined');
+  console.log('CLIENT_EMAIL:', process.env.REACT_APP_GOOGLE_SHEETS_CLIENT_EMAIL || 'CLIENT_EMAIL is undefined');
+  console.log('PRIVATE_KEY:', process.env.REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY ? `Length: ${process.env.REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY.length}` : 'PRIVATE_KEY is undefined');
+};
+
+testEnvVars();
+
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 // Load environment variables
