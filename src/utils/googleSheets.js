@@ -1,5 +1,6 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
+// Load environment variables
 const SPREADSHEET_ID = process.env.REACT_APP_GOOGLE_SHEETS_ID;
 const CLIENT_EMAIL = process.env.REACT_APP_GOOGLE_SHEETS_CLIENT_EMAIL;
 const PRIVATE_KEY = process.env.REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY;
@@ -7,18 +8,24 @@ const PRIVATE_KEY = process.env.REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY;
 export const submitRecipe = async (recipe) => {
   try {
     console.log('Starting submitRecipe function');
-    console.log('Spreadsheet ID:', SPREADSHEET_ID);
-    console.log('Client Email:', CLIENT_EMAIL);
-    console.log('Private Key length:', PRIVATE_KEY.length);
+    console.log('Spreadsheet ID:', SPREADSHEET_ID || 'Spreadsheet ID not found');
+    console.log('Client Email:', CLIENT_EMAIL || 'Client Email not found');
 
-    // Initialize Google Spreadsheet
+    // Check if PRIVATE_KEY is defined and log its length
+    if (!PRIVATE_KEY) {
+      console.error('Error: PRIVATE_KEY is undefined. Please check your environment variable settings.');
+      return; // Exit early if the private key is missing
+    }
+    console.log('Private Key Length:', PRIVATE_KEY.length);
+
+    // Initialize the Google Spreadsheet
     const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
     console.log('Google Spreadsheet initialized.');
 
-    // Authenticate using the service account
+    // Authenticate using the service account credentials
     await doc.useServiceAccountAuth({
       client_email: CLIENT_EMAIL,
-      private_key: PRIVATE_KEY.replace(/\\n/g, '\n'), // Correct private key format
+      private_key: PRIVATE_KEY.replace(/\\n/g, '\n'), // Correct newline formatting
     });
     console.log('Authenticated with service account.');
 
@@ -29,23 +36,6 @@ export const submitRecipe = async (recipe) => {
     // Access the first sheet
     const sheet = doc.sheetsByIndex[0];
     console.log('Accessed first sheet:', sheet.title);
-    console.log('Sheet Headers:', sheet.headerValues);
-
-    // Check for expected headers
-    const expectedHeaders = [
-      'Recipe Name',
-      'Ingredients',
-      'Preparation Steps',
-      'Game Type',
-      'Cooking Method',
-      'Cooking/Preparation Time'
-    ];
-
-    const missingHeaders = expectedHeaders.filter(header => !sheet.headerValues.includes(header));
-    if (missingHeaders.length > 0) {
-      console.error(`Missing headers in sheet: ${missingHeaders.join(', ')}`);
-      return; // Exit if required headers are missing
-    }
 
     // Add a new row
     await sheet.addRow({
@@ -59,14 +49,7 @@ export const submitRecipe = async (recipe) => {
     console.log('Row added successfully with data:', recipe);
 
   } catch (error) {
-    // Log detailed error information
     console.error('Error during Google Sheets operation:', error.message);
     console.error('Full error details:', error);
-
-    // If available, log API response details
-    if (error.response) {
-      console.error('API Response:', error.response.status, error.response.statusText);
-      console.error('Response Data:', error.response.data);
-    }
   }
 };
