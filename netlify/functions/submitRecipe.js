@@ -5,15 +5,15 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const { GOOGLE_SHEETS_ID, GOOGLE_SHEETS_CLIENT_EMAIL, GOOGLE_SHEETS_PRIVATE_KEY } = process.env;
+  const { REACT_APP_GOOGLE_SHEETS_ID, REACT_APP_GOOGLE_SHEETS_CLIENT_EMAIL, REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY } = process.env;
 
   try {
     const recipe = JSON.parse(event.body);
-    const doc = new GoogleSpreadsheet(GOOGLE_SHEETS_ID);
+    const doc = new GoogleSpreadsheet(REACT_APP_GOOGLE_SHEETS_ID);
 
     await doc.useServiceAccountAuth({
-      client_email: GOOGLE_SHEETS_CLIENT_EMAIL,
-      private_key: GOOGLE_SHEETS_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      client_email: REACT_APP_GOOGLE_SHEETS_CLIENT_EMAIL,
+      private_key: REACT_APP_GOOGLE_SHEETS_PRIVATE_KEY.replace(/\\n/g, '\n'),
     });
 
     await doc.loadInfo();
